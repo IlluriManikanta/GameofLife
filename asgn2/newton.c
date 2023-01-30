@@ -1,22 +1,26 @@
 //DONE
-#include <stdio.h>
 #include "mathlib.h"
 
-static double count = 0.0;
+#include <stdio.h>
 
-double sqrt_newton(double x){
-	double tmp = 0.0;
-	double ele = 1.0;
+static int count = 0;
 
-	for(;absolute(ele - tmp) > EPSILON; count += 1.0){
-		tmp = ele;
-		ele = 0.5 * (tmp + (x / tmp));
-		count += 1.0;	
-	}
-	return ele;
+double sqrt_newton(double x) {
+    double tmp = 0.0;
+    double ele = 1.0;
+
+    while (absolute(ele - tmp) > EPSILON) {
+        tmp = ele;
+        ele = 0.5 * (tmp + (x / tmp));
+        count++;
+    }
+    return ele;
 }
 
-int sqrt_newton_iters(void){
-	return (int)count;
-}
+int sqrt_newton_iters(void) {
+    //resetting counter
+    int var = count;
+    count = 0;
 
+    return (int) var;
+}
