@@ -54,60 +54,62 @@ int main(int argc, char **argv) {
     if (verbose == true) {
         if (all == true) {
 
-            printf("e() = %16.15lf, M_E = %16.15lf, diff = %16.15lf\n", e(), M_E, e() - M_E);
+            printf(
+                "e() = %16.15lf, M_E = %16.15lf, diff = %16.15lf\n", e(), M_E, absolute(e() - M_E));
             printf("e() terms = %d\n", e_terms());
 
             printf("pi_euler() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_euler(), M_PI,
-                pi_euler() - M_PI);
+                absolute(M_PI - pi_euler()));
             printf("pi_euler() terms = %d\n", pi_euler_terms());
 
             printf("pi_bbp() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_bbp(), M_PI,
-                pi_bbp() - M_PI);
+                absolute(pi_bbp() - M_PI));
             printf("pi_bbp() terms = %d\n", pi_bbp_terms());
 
             printf("pi_madhava() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_madhava(),
-                M_PI, pi_madhava() - M_PI);
+                M_PI, absolute(pi_madhava() - M_PI));
             printf("pi_madhava() terms = %d\n", pi_madhava_terms());
 
             printf("pi_viete() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_viete(), M_PI,
-                pi_viete() - M_PI);
+                absolute(pi_viete() - M_PI));
             printf("pi_viete() terms = %d\n", pi_viete_factors());
 
             for (double i = 0.0; i <= 10.0; i += 0.1) {
                 printf("sqrt_newton(%0.5lf) = %16.15lf, sqrt(%0.5lf) = %16.15lf, diff = %16.15lf\n",
-                    i, sqrt_newton(i), i, sqrt(i), sqrt_newton(i) - sqrt(i));
+                    i, sqrt_newton(i), i, sqrt(i), absolute(sqrt_newton(i) - sqrt(i)));
                 printf("sqrt_newton_terms() = %d\n", sqrt_newton_iters());
             }
         }
 
         if (efile == true) {
-            printf("e() = %16.15lf, M_E = %16.15lf, diff = %16.15lf\n", e(), M_E, e() - M_E);
+            printf(
+                "e() = %16.15lf, M_E = %16.15lf, diff = %16.15lf\n", e(), M_E, absolute(e() - M_E));
             printf("e() terms = %d\n", e_terms());
         }
         if (madhava == true) {
             printf("pi_madhava() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_madhava(),
-                M_PI, pi_madhava() - M_PI);
+                M_PI, absolute(pi_madhava() - M_PI));
             printf("pi_madhava() terms = %d\n", pi_madhava_terms());
         }
         if (euler == true) {
             printf("pi_euler() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_euler(), M_PI,
-                pi_euler() - M_PI);
+                absolute(M_PI - pi_euler()));
             printf("pi_euler() terms = %d\n", pi_euler_terms());
         }
         if (bbp == true) {
             printf("pi_bbp() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_bbp(), M_PI,
-                pi_bbp() - M_PI);
+                absolute(M_PI - pi_bbp()));
             printf("pi_bbp() terms = %d\n", pi_bbp_terms());
         }
         if (viete == true) {
             printf("pi_viete() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_viete(), M_PI,
-                pi_viete() - M_PI);
+                absolute(pi_viete() - M_PI));
             printf("pi_viete() terms = %d\n", pi_viete_factors());
         }
         if (newton == true) {
             for (double i = 0.0; i <= 10.0; i += 0.1) {
                 printf("sqrt_newton(%0.5lf) = %16.15lf, sqrt(%0.5lf) = %16.15lf, diff = %16.15lf\n",
-                    i, sqrt_newton(i), i, sqrt(i), sqrt_newton(i) - sqrt(i));
+                    i, sqrt_newton(i), i, sqrt(i), absolute(sqrt_newton(i) - sqrt(i)));
                 printf("sqrt_newton_terms() = %d\n", sqrt_newton_iters());
             }
         }
@@ -115,49 +117,51 @@ int main(int argc, char **argv) {
 
     if (verbose == false) {
         if (all == true) {
-            printf("e() = %16.15lf, M_E = %16.15lf, diff = %16.15lf\n", e(), M_E, e() - M_E);
+            printf(
+                "e() = %16.15lf, M_E = %16.15lf, diff = %16.15lf\n", e(), M_E, absolute(e() - M_E));
 
             printf("pi_euler() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_euler(), M_PI,
-                pi_euler() - M_PI);
+                absolute(pi_euler() - M_PI));
 
             printf("pi_bbp() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_bbp(), M_PI,
-                pi_bbp() - M_PI);
+                absolute(pi_bbp() - M_PI));
 
             printf("pi_madhava() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_madhava(),
-                M_PI, pi_madhava() - M_PI);
+                M_PI, absolute(pi_madhava() - M_PI));
 
             printf("pi_viete() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_viete(), M_PI,
-                pi_viete() - M_PI);
+                absolute(pi_viete() - M_PI));
 
             for (double i = 0.0; i <= 10.0; i += 0.1) {
                 printf("sqrt_newton(%0.5lf) = %16.15lf, sqrt(%0.5lf) = %16.15lf, diff = %16.15lf\n",
-                    i, sqrt_newton(i), i, sqrt(i), sqrt_newton(i) - sqrt(i));
+                    i, sqrt_newton(i), i, sqrt(i), absolute(sqrt_newton(i) - sqrt(i)));
             }
         }
 
         if (efile == true) {
-            printf("e() = %16.15lf, M_E = %16.15lf, diff = %16.15lf\n", e(), M_E, e() - M_E);
+            printf(
+                "e() = %16.15lf, M_E = %16.15lf, diff = %16.15lf\n", e(), M_E, absolute(e() - M_E));
         }
         if (madhava == true) {
             printf("pi_madhava() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_madhava(),
-                M_PI, pi_madhava() - M_PI);
+                M_PI, absolute(pi_madhava() - M_PI));
         }
         if (euler == true) {
             printf("pi_euler() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_euler(), M_PI,
-                pi_euler() - M_PI);
+                absolute(pi_euler() - M_PI));
         }
         if (bbp == true) {
             printf("pi_bbp() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_bbp(), M_PI,
-                pi_bbp() - M_PI);
+                absolute(pi_bbp() - M_PI));
         }
         if (viete == true) {
             printf("pi_viete() = %16.15lf, M_PI = %16.15lf, diff = %16.15lf\n", pi_viete(), M_PI,
-                pi_viete() - M_PI);
+                absolute(pi_viete() - M_PI));
         }
         if (newton == true) {
             for (double i = 0.0; i <= 10.0; i += 0.1) {
                 printf("sqrt_newton(%0.5lf) = %16.15lf, sqrt(%0.5lf) = %16.15lf, diff = %16.15lf\n",
-                    i, sqrt_newton(i), i, sqrt(i), sqrt_newton(i) - sqrt(i));
+                    i, sqrt_newton(i), i, sqrt(i), absolute(sqrt_newton(i) - sqrt(i)));
             }
         }
     }
