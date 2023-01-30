@@ -1,6 +1,5 @@
 //DONE
 #include <stdio.h>
-#include <stdlib.h>
 #include "mathlib.h"
 
 static double count = 1.0;
@@ -9,19 +8,18 @@ static double count = 1.0;
 double exponant(double i){
 	double val = 1.0;
 	double ele = 1.0;
-	
-	while(val > EPSILON){
+	for(;val > EPSILON; count += 1.0){
 		val *= i / count;
 		ele += val;
-		count += 1.0;
 	}
 	return ele;
 }
 
 double e(void){
-	return exponat(1);
+	return exponant(1.0);
 }
 int e_terms(void){
+
 	return (int)count;
 }
 
