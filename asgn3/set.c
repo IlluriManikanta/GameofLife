@@ -8,7 +8,6 @@ Set set_universal(void) {
 	return 4294967295;
 }
 
-
 bool set_member(Set s, uint8_t x) {
     return s & (1 << (x));
 }
