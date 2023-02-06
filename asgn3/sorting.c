@@ -1,194 +1,362 @@
-#include "batcher.h"
-#include "heap.h"
-#include "quick.h"
-#include "set.h"
-#include "shell.h"
-#include "stats.h"
-
-#include <getopt.h>
-#include <inttypes.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
+#include <inttypes.h>
+#include <math.h>
 #include <unistd.h>
+#include <getopt.h>
+#include <stdlib.h>
+#include "heap.h"
+#include "stats.h"
+#include "set.h"
+
+#include "batcher.h"
+#include "stats.h"
+#include "shell.h"
+#include "quick.h"
 
 #define OPTIONS "p:r:n:asbqHh"
 
-Stats *stats;
 
-const uint32_t heap = 1, quick = 2, shell = 3, batcher = 4, print = 5;
-
-void print_number_of_elements(uint32_t *arr, uint32_t n_elements, uint32_t number_to_print) {
-    uint32_t counter = 0;
-
-    uint32_t value = number_to_print > n_elements ? n_elements : number_to_print;
-
-    for (uint32_t i = 0; i < value; i++) {
-        if (i == 0) {
-            printf("%13" PRIu32, arr[i]);
-
-            counter++;
-
-            continue;
-        }
-        if (counter % 5 == 0) {
-
-            printf("\n");
-        }
-        printf("%13" PRIu32, arr[i]);
-
-        counter++;
-
-        if (i == value - 1) {
-            printf("\n");
-        }
-    }
-}
-
-void usage() {
-    fprintf(stderr, "SYNOPSIS\n");
-    fprintf(stderr, "   A collection of comparison-based sorting algorithms.\n\n");
-    fprintf(stderr, "USAGE\n");
-    fprintf(stderr, "   ./sorting [-Hasbhqn:p:r:] [-n length] [-p elements] [-r seed]\n\n");
-    fprintf(stderr, "OPTIONS\n");
-    fprintf(stderr, "   -H              Display program help and usage.\n");
-    fprintf(stderr, "   -a              Enable all sorts.\n");
-    fprintf(stderr, "   -s              Enable Shell Sort.\n");
-    fprintf(stderr, "   -b              Enable Batcher Sort.\n");
-    fprintf(stderr, "   -h              Enable Heap Sort.\n");
-    fprintf(stderr, "   -q              Enable Quick Sort.\n");
-    fprintf(stderr, "   -n length       Specify number of array elements (default: 100).\n");
-    fprintf(stderr, "   -p elements     Specify number of elements to print (default: 100).\n");
-    fprintf(stderr, "   -r seed         Specify random seed (default: 13371453).\n");
-}
+#define SHELL_SORT 0
+#define BATCHER_SORT 1
+#define QUICK_SORT 2
+#define HEAP_SORT 3
 
 int main(int argc, char **argv) {
-    Stats *statstics = (Stats *) malloc(sizeof(Stats));
 
+    Stats *test = (Stats *)malloc(sizeof(Stats));
+    int opt = 0;
+    uint64_t random_seed = 13371453;
+    srandom(random_seed);
+    uint32_t len = 100;
+    uint32_t ele = 100;
     Set my_set = set_empty();
 
-    int opt = 0;
+    while((opt = getopt(argc,argv, OPTIONS)) != -1){
 
-    uint64_t seed = 13371453;
-
-    srandom(seed);
-
-    uint32_t n_elements = 100;
-
-    uint32_t number_of_elements_to_print;
-    while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
-        switch (opt)
-
-        {
+        switch(opt){
         case 'a':
-            my_set = set_insert(my_set, heap);
-            my_set = set_insert(my_set, shell);
-            my_set = set_insert(my_set, quick);
-            my_set = set_insert(my_set, batcher);
+            my_set = set_insert(my_set, SHELL_SORT);
+            my_set = set_insert(my_set, BATCHER_SORT);
+            my_set = set_insert(my_set, QUICK_SORT);
+            my_set = set_insert(my_set, HEAP_SORT);
             break;
-
-        case 's': my_set = set_insert(my_set, shell); break;
-
-        case 'b': my_set = set_insert(my_set, batcher); break;
-
-        case 'q': my_set = set_insert(my_set, quick); break;
-
-        case 'h': my_set = set_insert(my_set, heap); break;
-
+       
+        case 's':
+            my_set = set_insert(my_set, SHELL_SORT);
+            break;
+        
+        case 'b':
+            my_set = set_insert(my_set, BATCHER_SORT);
+            break;
+        
+        case 'q':
+            my_set = set_insert(my_set, QUICK_SORT);
+            break;
+        
+        case 'h':
+            my_set = set_insert(my_set, HEAP_SORT);
+            break;
+        
         case 'r':
-            seed = atoi(optarg);
-
-            srandom(seed);
-
+            random_seed = strtoul(optarg, NULL, 10);
             break;
+        
+        case 'n':
+            len = strtoul(optarg, NULL, 10);
+            break;
+        
+        case 'p':
+            ele = strtoul(optarg, NULL, 10);
+        break;
+        
+        case 'H':
+        printf("SYNOPSIS\n");
+    printf("   A collection of comparison-based sorting algorithms.\n\n");
+    printf("USAGE\n");
+    printf("   ./sorting [-Hasbhqn:p:r:] [-n length] [-p elements] [-r seed]\n\n");
+    printf("OPTIONS\n");
+    printf("   -H              Display program help and usage.\n");
+    printf("   -a              Enable all sorts.\n");
+    printf("   -s              Enable Shell Sort.\n");
+    printf("   -b              Enable Batcher Sort.\n");
+    printf("   -h              Enable Heap Sort.\n");
+    printf("   -q              Enable Quick Sort.\n");
+    printf("   -n length       Specify number of array elements (default: 100).\n");
+    printf("   -p elements     Specify number of elements to print (default: 100).\n");
+    printf("   -r seed         Specify random seed (default: 13371453).\n");
+        
+        break;
+        
+        case '?':
+        printf("SYNOPSIS\n");
+    printf("   A collection of comparison-based sorting algorithms.\n\n");
+    printf("USAGE\n");
+    printf("   ./sorting [-Hasbhqn:p:r:] [-n length] [-p elements] [-r seed]\n\n");
+    printf("OPTIONS\n");
+    printf("   -H              Display program help and usage.\n");
+    printf("   -a              Enable all sorts.\n");
+    printf("   -s              Enable Shell Sort.\n");
+    printf("   -b              Enable Batcher Sort.\n");
+    printf("   -h              Enable Heap Sort.\n");
+    printf("   -q              Enable Quick Sort.\n");
+    printf("   -n length       Specify number of array elements (default: 100).\n");
+    printf("   -p elements     Specify number of elements to print (default: 100).\n");
+    printf("   -r seed         Specify random seed (default: 13371453).\n");
+        return 1;
+        }
+    }
+    uint32_t *arr = (uint32_t *)malloc(len * sizeof(uint32_t));
+    srandom(random_seed);
+    uint32_t val = 0;
+    uint32_t i;
+    if (set_member(my_set, SHELL_SORT) == 1 && set_member(my_set, BATCHER_SORT) == 1){
 
-        case 'n': n_elements = strtol(optarg, NULL, 10); break;
+        for (uint32_t i = 0; i < len; i++) {
+            arr[i] = (uint32_t)(random() & ~((1 << 30) | (1 << 31)));
+        }
+        batcher_sort(test, arr, len);
+        printf("Batcher Sort, %u elements, %lu move, %lu compares\n", len, test -> moves, test -> compares);
 
-        case 'p': number_of_elements_to_print = strtol(optarg, NULL, 10); break;
+        if (ele > len){
+            i = len;
+        } else {
+            i = ele;
+        }
+    for (uint32_t x = 0; x < i; x++) {
+        if (x == 0) {
+            val += 1;           
+            printf("%13" PRIu32, arr[x]);
+            continue;
+        }
+        if (val % 5 == 0) {
+            printf("\n");
+        }
+        printf("%13" PRIu32, arr[x]);
+        val += 1;
+        if (x == len -1) {
+            printf("\n");
+            }
+    }
+    reset(test);
+    srandom(random_seed);
 
-        case 'H': usage(); exit(0);
-        default: usage(); exit(1);
+    for (uint32_t i = 0; i < len; i++) {
+            arr[i] = (uint32_t)(random() & ~((1 << 30) | (1 << 31)));
+    }
+    heap_sort(test, arr, len);
+    printf("Heap Sort, %u elements, %lu move, %lu compares\n", len, test -> moves, test -> compares);
+
+    val = 0;
+    if (ele > len){
+        i = len;
+    } else {
+        i = ele;
+    }
+    for (uint32_t x = 0; x < i; x++) {
+        if (x == 0) {
+            val += 1;
+            printf("%13" PRIu32, arr[x]);
+            continue;
+        }
+        if (val % 5 == 0) {
+            printf("\n");
+        }
+        printf("%13" PRIu32, arr[x]);
+        val += 1;
+        if (x == len -1) {
+            printf("\n");
+        }
+    }
+    reset(test);
+    srandom(random_seed);
+
+    for (uint32_t i = 0; i < len; i++) {
+            arr[i] = (uint32_t)(random() & ~((1 << 30) | (1 << 31)));
+    }
+    quick_sort(test, arr, len);
+    printf("Quick Sort, %u elements, %lu move, %lu compares\n", len, test -> moves, test -> compares);
+    val = 0;
+
+    if (ele > len){
+        i = len;
+    } else {
+        i = ele;
+    }
+    for (uint32_t x = 0; x < i; x++) {
+        if (x == 0) {
+            val += 1;
+            printf("%13" PRIu32, arr[x]);
+            continue;
+        }
+        if (val % 5 == 0) {
+            printf("\n");
+        }
+        printf("%13" PRIu32, arr[x]);
+        val += 1;
+        if (x == len -1) {
+            printf("\n");
+        }
+    }
+    reset(test);
+    srandom(random_seed);
+
+    for (uint32_t i = 0; i < len; i++) {
+             arr[i] = (uint32_t)(random() & ~((1 << 30) | (1 << 31)));
+    }
+    shell_sort(test, arr, len);
+    printf("Shell Sort, %u elements, %lu move, %lu compares\n", len, test -> moves, test -> compares);
+    val = 0;
+
+    if (ele > len){
+        i = len;
+    } else {
+        i = ele;
+    }
+    for (uint32_t x = 0; x < i; x++) {
+        if (x == 0) {
+            val += 1;
+            printf("%13" PRIu32, arr[x]);
+            continue;
+        }
+        if (val % 5 == 0) {
+            printf("\n");
+        }
+        printf("%13" PRIu32, arr[x]);
+        val += 1;
+        if (x == len -1) {
+            printf("\n");
+        }
+    }
+    reset(test);
+    srandom(random_seed);
+    }
+
+    else if (set_member(my_set, SHELL_SORT) == 1){
+        for (uint32_t i = 0; i < len; i++) {
+            arr[i] = (uint32_t)(random() & ~((1 << 30) | (1 << 31)));
+        }
+        shell_sort(test, arr, len);
+        printf("Shell Sort, %u elements, %lu move, %lu compares\n", len, test -> moves, test -> compares);
+        //print
+        val = 0;
+        if (ele > len){
+            i = len;
+        } else {
+            i = ele;
+        }
+        for (uint32_t x = 0; x < i; x++) {
+            if (x == 0) {
+                val += 1;
+                printf("%13" PRIu32, arr[x]);
+                continue;
+            }
+            if (val % 5 == 0) {
+                printf("\n");
+            }
+            printf("%13" PRIu32, arr[x]);
+            val += 1;
+            if (x == len -1) {
+                printf("\n");
+            }
+        }
+
+    }
+
+    else if (set_member(my_set, BATCHER_SORT) == 1) {
+        for (uint32_t i = 0; i < len; i++) {
+            arr[i] = (uint32_t)(random() & ~((1 << 30) | (1 << 31)));
+        }
+        batcher_sort(test, arr, len);
+        printf("Batcher Sort, %u elements, %lu move, %lu compares\n", len, test -> moves, test -> compares);
+        //print
+        val = 0;
+
+        if (ele > len){
+            i = len;
+        } else {
+            i = ele;
+        }
+        for (uint32_t x = 0; x < i; x++) {
+            if (x == 0) {
+                val += 1;
+                printf("%13" PRIu32, arr[x]);
+                continue;
+            }
+            if (val % 5 == 0) {
+                printf("\n");
+            }
+            printf("%13" PRIu32, arr[x]);
+            val += 1;
+            if (x == len -1) {
+                printf("\n");
+            }
         }
     }
 
-    uint32_t *arr = (uint32_t *) malloc(n_elements * sizeof(uint32_t));
-
-    srandom(seed);
-
-    if (set_member(my_set, shell)) {
-        srandom(seed);
-
-        for (uint32_t i = 0; i < n_elements; i++)
-
-        {
-            arr[i] = (uint32_t) (random() & (0x3FFFFFFF));
+    else if (set_member(my_set, QUICK_SORT) == 1) {
+        for (uint32_t i = 0; i < len; i++) {
+            arr[i] = (uint32_t)(random() & ~((1 << 30) | (1 << 31)));
         }
-        shell_sort(statstics, arr, n_elements);
+        quick_sort(test, arr, len);
+        printf("Quick Sort, %u elements, %lu move, %lu compares\n", len, test -> moves, test -> compares);
+        //print
+        val = 0;
 
-        printf("Shell sort, %u elements, %lu moves, %lu compares\n", n_elements, statstics->moves,
-            statstics->compares);
-
-        print_number_of_elements(arr, n_elements, number_of_elements_to_print);
-
-        reset(statstics);
+        if (ele > len){
+            i = len;
+        } else {
+            i = ele;
+        }
+        for (uint32_t x = 0; x < i; x++) {
+            if (x == 0) {
+                val += 1;
+                printf("%13" PRIu32, arr[x]);
+                continue;
+            }
+            if (val % 5 == 0) {
+                printf("\n");
+            }
+            printf("%13" PRIu32, arr[x]);
+            val += 1;
+            if (x == len -1) {
+                printf("\n");
+            }
+        }
     }
 
-    if (set_member(my_set, batcher)) {
-        srandom(seed);
-
-        for (uint32_t i = 0; i < n_elements; i++)
-
-        {
-            arr[i] = (uint32_t) (random() & (0x3FFFFFFF));
+    else if (set_member(my_set, HEAP_SORT) == 1) {
+        for (uint32_t i = 0; i < len; i++) {
+            arr[i] = (uint32_t)(random() & ~((1 << 30) | (1 << 31)));
         }
-        batcher_sort(statstics, arr, n_elements);
+        heap_sort(test, arr, len);
+        printf("\n");
+        printf("Heap Sort, %u elements, %lu move, %lu compares\n", len, test -> moves, test -> compares);
+        //print
+        val = 0;
 
-        printf("Batcher Sort, %u elements, %lu moves, %lu compares\n", n_elements, statstics->moves,
-            statstics->compares);
-
-        print_number_of_elements(arr, n_elements, number_of_elements_to_print);
-
-        reset(statstics);
-    }
-
-    if (set_member(my_set, heap)) {
-        srandom(seed);
-
-        for (uint32_t i = 0; i < n_elements; i++)
-
-        {
-            arr[i] = (uint32_t) (random() & (0x3FFFFFFF));
+        if (ele > len){
+            i = len;
+        } else {
+            i = ele;
         }
-        heap_sort(statstics, arr, n_elements);
-
-        printf("Heap Sort, %u elements, %lu moves, %lu compares\n", n_elements, statstics->moves,
-            statstics->compares);
-
-        print_number_of_elements(arr, n_elements, number_of_elements_to_print);
-
-        reset(statstics);
-    }
-
-    if (set_member(my_set, quick)) {
-        srandom(seed);
-
-        for (uint32_t i = 0; i < n_elements; i++)
-
-        {
-            arr[i] = (uint32_t) (random() & (0x3FFFFFFF));
+        for (uint32_t x = 0; x < i; x++) {
+            if (x == 0) {
+                val += 1;
+                printf("%13" PRIu32, arr[x]);
+                continue;
+            }
+            if (val % 5 == 0) {
+                printf("\n");
+            }
+            printf("%13" PRIu32, arr[x]);
+            val += 1;
+            if (x == len -1) {
+                printf("\n");
+            }
         }
-        quick_sort(statstics, arr, n_elements);
-
-        printf("Quick Sort, %u elements, %lu moves, %lu compares\n", n_elements, statstics->moves,
-            statstics->compares);
-
-        print_number_of_elements(arr, n_elements, number_of_elements_to_print);
-
-        reset(statstics);
     }
-
-    free(arr);
-
-    free(statstics);
-
-    return 0;
+    return 0;      
 }
+
+
