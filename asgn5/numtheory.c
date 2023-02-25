@@ -1,4 +1,4 @@
-//DONE NEED TO CHECK
+//NEED TO FIX ERRORS
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -8,30 +8,35 @@
 #include "randstate.h"
 #include "numtheory.h"
 
-//gmp_randstate_t state;
-//git test
-void gcd(mpz_t d, mpz_t a, mpz_t b){
+//DONE
+void gcd(mpz_t g, const mpz_t a, const mpz_t b){
 	//the if statments check the corner cases of when b or are is equal to 0 and 1.
 	//Mpz_cmp_ui check the parameters and will return 0 if b or a are equal to 0.
 	if(mpz_cmp_ui(b, 0) == 0 || mpz_cmp_ui(b, 1) == 0 || mpz_cmp_ui(a, 0) == 0 || mpz_cmp_ui(a, 1) == 0) {
-		mpz_set_ui(d, 0);
+		mpz_set_ui(g, 0);
 		return;
 	}
 	mpz_t val, vala, valb;
-	mpz_inits(val, vala, valb, NULL);
+	mpz_inits(vala, valb, val, NULL);
 	mpz_set(vala, a);
 	mpz_set(valb, b);
-	while(mpz_cmp_ui(valb, 0) != 0){
+	//printf("%s\n", "before while loop c^^^^^^^^^^^^^^^");
+        while(mpz_cmp_ui(valb, 0) != 0){
+        //printf("%s\n", "inside while loop: -1------------------");
+                mpz_set_ui(val, 0);
 		mpz_set(val, valb);
 		mpz_mod(valb, vala, valb);
 		mpz_set(vala, val);
+	//printf("%s\n", "end of while loop*************************");
 	}
-	mpz_set(d, vala);
-	mpz_clears(val, vala, valb);
+	//printf("%s\n", "after loop  while loop&&&&&&&&&&&&&&&&&&&&&&&&");
+	mpz_set(g, vala);
+	mpz_clears(vala, valb, val, NULL);
 
 }
 
-void mod_inverse(mpz_t o, mpz_t a, mpz_t n){
+
+void mod_inverse(mpz_t o, const mpz_t a, const mpz_t n){
 	mpz_t r, rp, t, tp, q, qtp, qrp;
 	mpz_t tempval, tempval_1;
 	mpz_inits(r, rp, t, tp, q, qtp, qrp, NULL);
@@ -67,7 +72,7 @@ void mod_inverse(mpz_t o, mpz_t a, mpz_t n){
 
 }
 
-void pow_mod(mpz_t o, mpz_t a, mpz_t d, mpz_t n){
+void pow_mod(mpz_t o, const mpz_t a, const mpz_t d, const mpz_t n){
 	mpz_t v, p, ex, vp, ptemp, temp;
 	mpz_inits(v, p, ex, vp, ptemp, temp, NULL );
 	mpz_set_ui(v, 1);
@@ -97,46 +102,82 @@ void pow_mod(mpz_t o, mpz_t a, mpz_t d, mpz_t n){
 
 
     
-bool is_prime(mpz_t n, uint64_t iters) {
-	mpz_t res, val, n1, rm2, aval, yval, temp, s1, j, pm2; 
-	mpz_inits(res, val, n1, rm2, aval, yval, temp, s1, j, pm2, NULL); 
-	mpz_sub_ui (n1, n1, 1); 
-	mpz_set(res, n1); 
-	mpz_set_ui(val, 0); 
-	mpz_mod_ui(rm2, res, 2); 
-	while(mpz_cmp_ui(rm2, 1) != 0){ 
-		//printf("is_prime while loop\n");
-		mpz_fdiv_q_ui (res, res, 2); 
-		mpz_mod_ui(rm2, res, 2); 
-		mpz_add_ui (val, val, 1); 
+bool is_prime(const mpz_t n, uint64_t iters) {
+//if statments check if numbers are 2 and 3 are present, if so will automaticly return true
+    if (mpz_cmp_ui(n, 2) == 0){
+        return true;
+    }
+    if(mpz_cmp_ui(n, 3) == 0){
+        return true;
+    }
+    if ((mpz_divisible_ui_p(n, 2) != 0)) {
+        return false;
+    }
+//if statments check if numbers are 1 and 0 are present and automaticly return false
+    if(mpz_cmp_ui(n, 1) == 0){
+        return false;
+    }
+    if(mpz_cmp_ui(n, 0) == 0){
+        return false;
+    }    
+
+    
+    //declaring the variables
+    mpz_t aval, yval, j, itter, res, powmod, nmin, prob;
+    mpz_inits(aval, yval, j, itter, res, powmod, nmin, prob, NULL);
+    
+	//variables for bit calculation
+	mp_bitcnt_t bit = 1;
+	mp_bitcnt_t bitval;
+	
+	//calculating number n-1 bits
+	mpz_sub_ui(nmin, n, 1); 
+	
+	int number = mpz_divisible_2exp_p(nmin, bit);
+      
+	while(number == 0){
+	  bit++;
+	  number = mpz_divisible_2exp_p(nmin, bit);
 	}
-	mpz_sub_ui(s1, val, 1); 
-	mpz_set_ui(pm2, 2); // setting 2 to mpz type because powmod only takes mpz types got help from TA for this part
-	for(mpz_set_ui(temp, 1); mpz_cmp_ui(temp, iters); mpz_add_ui(temp, temp, 1)){ 
-		//printf("is_prime for loop\n");
+	
+        mpz_set_ui(prob, 1);
+        mpz_mul_2exp(prob, prob, bit);
+        mpz_cdiv_q(res, nmin, prob);
+	
+	
+	for(mpz_set_ui(itter, 1); mpz_cmp_ui(itter, iters) < 0; mpz_add_ui(itter, itter, 1)){ 
+		
 		mpz_urandomm(aval, state, n); 
-		//printf("is_prime in for after urandomm\n");
+	
 		mpz_add_ui(aval, aval, 2);
-		//printf("is_prime in for after mpz_add_ui\n"); 
+		
 		pow_mod(yval, aval, res, n); 
-		//printf("is_prime in for after pow_mod\n");
-		if((mpz_cmp(yval, n1) != 0 && mpz_cmp_ui(yval,1) != 0)){ 
+		
+		if((mpz_cmp_ui(yval, 1) != 0) && (mpz_cmp(yval, nmin) != 0)){ 
 			mpz_set_ui(j, 1);
-		//	printf("is_prime if in for loop\n");
-			while((mpz_cmp(j, s1) <= 0) && (mpz_cmp(yval, n1) != 0)){ 
-		//		printf("is_prime while loop in for loop\n");
-				pow_mod(yval, yval, pm2, n1); 
+			bitval = bit - 1;
+			
+			while((mpz_cmp(yval, nmin) != 0) && (mpz_cmp_ui(j, bitval) <= 0)){ 
+		
+				mpz_set_ui(powmod, 2);
+				pow_mod(yval, yval, powmod, nmin); 
+				
 				if(mpz_cmp_ui(yval, 1) == 0){
+				        mpz_clears(aval, yval, j, itter, res, powmod, nmin, prob, NULL);
 					return false; 
 				}
+				
 				mpz_add_ui(j, j, 1); 
 			}
-			if (mpz_cmp(yval, n1) != 0){ 
+			
+			if (mpz_cmp(yval, nmin) != 0){ 
+			        mpz_clears(aval, yval, j, itter, res, powmod, nmin, prob, NULL);
 				return false; 
 			}
 		}
 	}
-	mpz_clears(res, val, n1, rm2, aval, yval, temp, s1, j, pm2, NULL);
+	
+	mpz_clears(aval, yval, j, itter, res, powmod, nmin, prob, NULL);
 	return true;
 }
 
@@ -163,5 +204,4 @@ void make_prime(mpz_t p, uint64_t bits, uint64_t iters){
 	return;
 
 }
-
 
