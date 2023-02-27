@@ -165,7 +165,7 @@ bool is_prime(const mpz_t n, uint64_t iters) {
 }
 
 void make_prime(mpz_t p, uint64_t bits, uint64_t iters) {
-//var to see if is_prime is true or false to break loop
+    //var to see if is_prime is true or false to break loop
     int ele = 0;
 
     while (ele == 0) {
