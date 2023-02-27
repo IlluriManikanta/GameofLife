@@ -50,11 +50,13 @@ void mod_inverse(mpz_t o, const mpz_t a, const mpz_t n) {
     }
     if (mpz_cmp_ui(r, 1) > 0) {
         mpz_set_ui(o, 0);
+        mpz_clears(r, rp, t, tp, q, qrp, qtp, tempval, tempval_1, NULL);
         return;
     }
     if (mpz_cmp_ui(t, 0) < 0) {
         mpz_add(t, t, n);
         mpz_set(o, t);
+        mpz_clears(r, rp, t, tp, q, qrp, qtp, tempval, tempval_1, NULL);
         return;
     }
 

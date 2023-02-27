@@ -101,4 +101,6 @@ int main(int argc, char **argv) {
     }
     fclose(pub_file);
     fclose(prv_file);
+    mpz_clears(p, q, pq, n, d, NULL);
+    randstate_clear();
 }
