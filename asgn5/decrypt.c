@@ -1,3 +1,4 @@
+//DONE
 #include <getopt.h>
 #include <stdbool.h>
 #include "numtheory.h"

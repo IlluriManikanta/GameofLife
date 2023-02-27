@@ -1,3 +1,4 @@
+//DONE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -80,36 +81,3 @@ int main(int argc, char **argv) {
     fclose(public);
     mpz_clear(n);
 }
-
-/*
-#include <stdio.h>
-#include <getopt.h>
-#include <gmp.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include "numtheory.h"
-#include "randtstae.h"
-#include "ss.c"
-
-#define OPTIONS "i:o:n:v:h"
-
-int main(int argc, char **argv) {
-    int opt = 0; // variable for getting option form array
-    char *public_key_file = "ss.pub"; // public key name
-
-    FILE *infile = stdin;
-    FILE *outfile = stdout;
-    FILE *public_key = NULL;
-    bool verbose = false;
-
-    while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
-            switch (opt) {
-            
-            
-            }
-    }
-
-}
-
-*/

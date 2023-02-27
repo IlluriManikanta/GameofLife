@@ -1,3 +1,4 @@
+//DONE
 #include <stdio.h>
 #include "ss.h"
 #include "numtheory.h"
@@ -8,10 +9,8 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-
+//DONE
 void ss_make_pub(mpz_t p, mpz_t q, mpz_t n, uint64_t nbits, uint64_t iters) {
-    //DONE
-
     mpz_t q_minus_1;
     mpz_init(q_minus_1);
     uint64_t pbits = (random() % (((2 * nbits) / 5) - (nbits / 5) + 1)) + (nbits / 5);
@@ -31,6 +30,7 @@ void ss_make_pub(mpz_t p, mpz_t q, mpz_t n, uint64_t nbits, uint64_t iters) {
     mpz_clear(q_minus_1);
 }
 
+//DONE
 void ss_make_priv(mpz_t d, mpz_t pq, const mpz_t p, const mpz_t q) {
     mpz_t gcd_value, p_min, q_min, n, min_mul, lambda;
     mpz_inits(gcd_value, p_min, q_min, n, min_mul, lambda, NULL);
@@ -75,12 +75,13 @@ void ss_decrypt(mpz_t m, const mpz_t c, const mpz_t d, const mpz_t pq) {
     pow_mod(m, c, d, pq);
 }
 
+//DONE
 void ss_encrypt_file(FILE *infile, FILE *outfile, const mpz_t n) {
- 
-  mpz_t m, fnl_ency;
+    mpz_t m, fnl_ency;
     mpz_inits(m, fnl_ency, NULL);
-    size_t k = ((0.5*mpz_sizeinbase(n, 2) - 1) / 8);
-    uint8_t *a = (uint8_t *) (calloc(k, sizeof(uint8_t))); // got logic/syntax for malloc from sorting.c file n assighnment 4
+    size_t k = ((0.5 * mpz_sizeinbase(n, 2) - 1) / 8);
+    uint8_t *a = (uint8_t *) (calloc(
+        k, sizeof(uint8_t))); // got logic/syntax for malloc from sorting.c file n assighnment 4
     a[0] = 0xFF;
     size_t s;
     while (!feof(infile)) { //run until it enocunters the end of file
@@ -91,12 +92,11 @@ void ss_encrypt_file(FILE *infile, FILE *outfile, const mpz_t n) {
     }
     free(a);
     mpz_clears(m, fnl_ency, NULL);
-    
-    
 }
 
+//DONE
 void ss_decrypt_file(FILE *infile, FILE *outfile, const mpz_t d, const mpz_t pq) {
-    
+
     mpz_t m, c, fnl_decy;
     mpz_inits(m, c, fnl_decy, NULL);
     size_t k = (mpz_sizeinbase(pq, 2) - 1) / 8;
@@ -111,6 +111,4 @@ void ss_decrypt_file(FILE *infile, FILE *outfile, const mpz_t d, const mpz_t pq)
         fwrite((a + 1), 1, s - 1, outfile);
     }
     mpz_clears(m, c, fnl_decy, NULL);
-    
 }
-

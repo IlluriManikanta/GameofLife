@@ -1,3 +1,4 @@
+//DONE
 #include <stdio.h>
 #include "randstate.h"
 #include "numtheory.h"
@@ -79,25 +80,17 @@ int main(int argc, char **argv) {
     fchmod(fileno(prv_file), 0600);
     randstate_init(seed);
 
-    //gmp_fprintf(stderr, "before make pub p: (%zu bits) = %Zd\n", mpz_sizeinbase(p, 2), p);
     ss_make_pub(p, q, n, bitval, iters);
-    // gmp_fprintf(stderr, "after make prub p: (%zu bits) = %Zd\n", mpz_sizeinbase(p, 2), p);
 
-    // gmp_fprintf(stderr, "before make privp: (%zu bits) = %Zd\n", mpz_sizeinbase(p, 2), p);
     ss_make_priv(d, pq, p, q);
-    // gmp_fprintf(stderr, "after make priv p: (%zu bits) = %Zd\n", mpz_sizeinbase(p, 2), p);
 
     char *username = getenv("USERNAME");
 
-    //gmp_fprintf(stderr, "before write pub n:  (%zu bits) = %Zd\n", mpz_sizeinbase(n, 2), n);
     ss_write_pub(n, username, pub_file);
-    //gmp_fprintf(stderr, "after write pub n:  (%zu bits) = %Zd\n", mpz_sizeinbase(n, 2), n);
-    //gmp_fprintf(stderr, "before write priv pq:  (%zu bits) = %Zd\n", mpz_sizeinbase(pq, 2), pq);
+
     ss_write_priv(pq, d, prv_file);
-    //gmp_fprintf(stderr, "after write priv pq:  (%zu bits) = %Zd\n", mpz_sizeinbase(pq, 2), pq);
-    //printf("%d\n", check);
+
     if (check) {
-        //gmp_fprintf(stderr, "in check if p: (%zu bits) = %Zd\n", mpz_sizeinbase(p, 2), p);
 
         fprintf(stderr, "username: %s\n", username);
         gmp_fprintf(stderr, "p: (%zu bits) = %Zd\n", mpz_sizeinbase(p, 2), p);

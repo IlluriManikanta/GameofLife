@@ -1,5 +1,4 @@
-//DONE NEED TO CHECK
-
+//DONE
 #include "randstate.h"
 #include <stdlib.h>
 
