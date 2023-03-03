@@ -40,6 +40,7 @@ void trie_reset(TrieNode *root){
       }
       i++;
     }
+    return;
   }
 }
 
