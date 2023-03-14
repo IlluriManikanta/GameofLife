@@ -39,7 +39,6 @@ int write_bytes(int outfile, uint8_t *buf, int to_write) {
     return fnl;
 }
 
-
 void read_header(int infile, FileHeader *header) {
     if (!little_endian()) {
         header->magic = swap32(header->magic);
@@ -58,7 +57,6 @@ void write_header(int outfile, FileHeader *header) {
     total_bits = total_bits + (sizeof(FileHeader) * 8);
 }
 
-
 bool read_sym(int infile, uint8_t *sym) {
     static int finish = -1;
     if (!sym_index_val) {
@@ -70,7 +68,7 @@ bool read_sym(int infile, uint8_t *sym) {
 
     *sym = sym_buffer[sym_index_val];
     sym_index_val = (sym_index_val + 1) % BLOCK;
-    
+
     if (sym_index_val != finish) {
         total_syms += 1;
     }
@@ -81,60 +79,53 @@ bool read_sym(int infile, uint8_t *sym) {
     }
 }
 
+//Was helped by Varun TA. He guided me in debugging and understanding the write pair logic.
+void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen) {
+    if (big_endian()) {
+        swap16(code);
+    }
 
-//Was helped by Varun TA. He guided me in debugging and understanding the write pair logic. 
-void write_pair(int outfile, uint16_t code, uint8_t sym,
-    int bitlen) { 
-        if (big_endian()) { 
-            swap16(code); 
+    for (int i = 0; i < bitlen; i++) {
+        if (bit_index_val == 8 * BLOCK) {
+            write_bytes(outfile, bit_buffer, BLOCK);
+
+            bit_index_val = 0;
         }
-        
-        for (int i = 0; i < bitlen; i++) { 
-            if (bit_index_val == 8 * BLOCK) { 
-                write_bytes(outfile, bit_buffer, BLOCK); 
-    
-                bit_index_val = 0; 
-            }
-            uint16_t get_code_bit
-                = (code >> (i % 16)) & 1; 
-            if (get_code_bit) { 
-                bit_buffer[bit_index_val / 8]
-                    |= (1 << (bit_index_val % 8));
-            }
-
-            bit_index_val += 1; 
+        uint16_t get_code_bit = (code >> (i % 16)) & 1;
+        if (get_code_bit) {
+            bit_buffer[bit_index_val / 8] |= (1 << (bit_index_val % 8));
         }
 
-        for (int j = 0; j < 8; j++) { 
-            if (bit_index_val == 8 * BLOCK) { 
-                write_bytes(
-                    outfile, bit_buffer, BLOCK); 
-                memset(bit_buffer, 0, BLOCK); 
-                bit_index_val = 0; 
-            }
-            uint8_t get_sym_bit = (sym >> (j % 8)) & 1;
-            if (get_sym_bit) {
-                bit_buffer[bit_index_val / 8]
-                    |= (1 << (bit_index_val % 8)); 
-            }
+        bit_index_val += 1;
+    }
 
-            bit_index_val += 1; 
+    for (int j = 0; j < 8; j++) {
+        if (bit_index_val == 8 * BLOCK) {
+            write_bytes(outfile, bit_buffer, BLOCK);
+            memset(bit_buffer, 0, BLOCK);
+            bit_index_val = 0;
+        }
+        uint8_t get_sym_bit = (sym >> (j % 8)) & 1;
+        if (get_sym_bit) {
+            bit_buffer[bit_index_val / 8] |= (1 << (bit_index_val % 8));
         }
 
-        total_bits += (bitlen + 8);  
+        bit_index_val += 1;
+    }
+
+    total_bits += (bitlen + 8);
 }
-
 
 void flush_pairs(int outfile) {
     if (outfile) {
-        if (write_bytes(outfile, bit_buffer, (bit_index_val % 8) ? (bit_index_val / 8) : (bit_index_val / 8) + 1)) {
+        if (write_bytes(outfile, bit_buffer,
+                (bit_index_val % 8) ? (bit_index_val / 8) : (bit_index_val / 8) + 1)) {
             return;
         }
     } else {
         exit(1);
     }
 }
-
 
 bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen) {
     if (!infile) {

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-//created this function to calculate bit lenght, Idea was derived from previous quarter work.  
+//created this function to calculate bit lenght, Idea was derived from previous quarter work.
 int bit_length(uint16_t code) {
     int bitlen = 0;
 
@@ -114,13 +114,14 @@ int main(int argc, char *argv[]) {
     close(outfile);
 
     if (verbose) {
-        double saving = 1.0 - ((float) !(total_bits % 8) ? (total_bits / 8) : (total_bits / 8) + 1 / (float) total_syms);
-        fprintf(
-            stderr, "Compressed file size: %" PRIu64 " bytes\n", !(total_bits % 8) ? (total_bits / 8) : (total_bits / 8) + 1);
+        double saving = 1.0
+                        - ((float) !(total_bits % 8) ? (total_bits / 8)
+                                                     : (total_bits / 8) + 1 / (float) total_syms);
+        fprintf(stderr, "Compressed file size: %" PRIu64 " bytes\n",
+            !(total_bits % 8) ? (total_bits / 8) : (total_bits / 8) + 1);
         fprintf(stderr, "Uncompressed file size: %" PRIu64 " bytes\n", total_syms);
         fprintf(stderr, "Space saving: %.2f%%\n", 100 * saving);
     }
 
     return 0;
 }
-
