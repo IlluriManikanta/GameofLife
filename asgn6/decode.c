@@ -1,18 +1,16 @@
+//DONE
 #include "code.h"
 #include "io.h"
 #include "trie.h"
-
-#include <getopt.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
 
-uint64_t length_of_the_byte(uint64_t bits) {
-    return !(bits % 8) ? (bits / 8) : (bits / 8) + 1;
-}
 
+//created this function to calculate bit lenght, Idea was derived from previous quarter work.  
 int bit_length(uint16_t code) {
     int bitlen = 0;
 
@@ -31,19 +29,8 @@ int main(int argc, char *argv[]) {
     while ((options = getopt(argc, argv, "hvi:o:")) != -1) {
         switch (options) {
         case 'v': verbose = true; break;
-        case 'i':
-            if ((infile = open(optarg, O_RDONLY | O_WRONLY | O_RDWR)) == -1) {
-                fprintf(stderr, "Error : failed to open input file.\n");
-                return EXIT_FAILURE;
-            }
-            break;
-        case 'o':
-            if ((outfile = open(optarg, O_RDONLY | O_WRONLY | O_RDWR)) == -1) {
-                fprintf(stderr, "Error : failed to open output file.\n");
-                close(infile);
-                return EXIT_FAILURE;
-            }
-            break;
+        case 'i': infile = open(optarg, O_RDONLY | O_WRONLY | O_RDWR); break;
+        case 'o': outfile = open(optarg, O_RDONLY | O_WRONLY | O_RDWR); break;
         case 'h':
             fprintf(stderr, "SYNOPSIS\n");
             fprintf(stderr, "   Decompresses files with the LZ78 decompression algorithm.\n");
@@ -56,7 +43,7 @@ int main(int argc, char *argv[]) {
             fprintf(stderr,
                 "   -o output   Specify output of decompressed input (stdout by default)\n");
             fprintf(stderr, "   -h          Display program usage\n");
-            return EXIT_SUCCESS;
+            return 0;
         default:
             fprintf(stderr, "SYNOPSIS\n");
             fprintf(stderr, "   Decompresses files with the LZ78 decompression algorithm.\n");
@@ -69,17 +56,17 @@ int main(int argc, char *argv[]) {
             fprintf(stderr,
                 "   -o output   Specify output of decompressed input (stdout by default)\n");
             fprintf(stderr, "   -h          Display program usage\n");
-            return EXIT_FAILURE;
+            return 1;
         }
     }
     FileHeader header = { 0, 0 };
     read_header(infile, &header);
 
     if (header.magic != MAGIC) {
-        fprintf(stderr, "Bad magic number!\n");
+        fprintf(stderr, "Not the correct Magic number.\n");
         close(infile);
         close(outfile);
-        return EXIT_FAILURE;
+        return 1;
     }
 
     fchmod(outfile, header.protection);
@@ -103,9 +90,9 @@ int main(int argc, char *argv[]) {
     flush_words(outfile);
 
     if (verbose) {
-        double saving = 1.0 - ((float) length_of_the_byte(total_bits) / (float) total_syms);
+        double saving = 1.0 - ((float) !(total_bits % 8) ? (total_bits / 8) : (total_bits / 8) + 1 / (float) total_syms);
         fprintf(
-            stderr, "Compressed file size: %" PRIu64 " bytes\n", length_of_the_byte(total_bits));
+            stderr, "Compressed file size: %" PRIu64 " bytes\n", !(total_bits % 8) ? (total_bits / 8) : (total_bits / 8) + 1);
         fprintf(stderr, "Uncompressed file size: %" PRIu64 " bytes\n", total_syms);
         fprintf(stderr, "Space saving: %.2f%%\n", 100 * saving);
     }

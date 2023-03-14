@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 TrieNode *trie_node_create(uint16_t index) {
-    TrieNode *node = (struct TrieNode *) malloc(sizeof(TrieNode));
+    TrieNode *node = (TrieNode *) malloc(sizeof(TrieNode));
     if (node) {
         node->code = index;
         int i = 0;
@@ -24,10 +24,11 @@ TrieNode *trie_node_create(uint16_t index) {
 }
 
 void trie_node_delete(TrieNode *n) {
-
-    free(n);
-    n = NULL;
-    return;
+    if (n != NULL) {
+        free(n);
+        n = NULL;
+        return;
+    }
 }
 
 TrieNode *trie_create(void) {
@@ -55,7 +56,7 @@ void trie_delete(TrieNode *n) {
         trie_node_delete(n->children[i]);
         i++;
     }
-    trie_node_delete(n);
+    free(n);
     n = NULL;
     return;
 }
