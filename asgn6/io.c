@@ -84,7 +84,7 @@ void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen) {
         swap16(code);
     }
 
-    uint32_t i = 0, j = 0;
+    int i = 0, j = 0;
 
     while (i < bitlen) {
         if (code >> (i % 16) & 1) {
@@ -138,7 +138,7 @@ bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen) {
     } else {
 
         *code = 0, *sym = 0;
-        uint32_t i = 0, j = 0;
+        int i = 0, j = 0;
         while (i < bitlen) {
             uint8_t calc = ((bit_buffer[bit_index_val / 8] >> (bit_index_val % 8)) & 1);
             if (!bit_index_val) {

@@ -1,30 +1,21 @@
-CC = clang
-CFLAGS = -Wall -Werror -Wextra -Wpedantic 
+CC      = clang
+CFLAGS 	= -Wall -Wpedantic -Wextra -Werror -Ofast
 
+.PHONY: all clean
 
 all: encode decode
 
-trie: trie.o
-	$(CC) -o $@ $^ $(LFLAGS)
-	
-word: word.o
-	$(CC) -o $@ $^ $(LFLAGS)
-	
-io: io.o 
-	$(CC) -o $@ $^ $(LFLAGS)
-	
-encode: encode.o tire.o word.o io.o 
-	$(CC) -o $@ $^ $(LFLAGS)
+encode: encode.o word.o trie.o io.o
+	$(CC) -o $@ $^
 
-decode: decode.o tire.o word.o io.o 
-	$(CC) -o $@ $^ $(LFLAGS)
+decode: decode.o word.o trie.o io.o
+	$(CC) -o $@ $^
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $<
+%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f keygen encrypt decrypt *.o
-
+	rm -f encode decode *.o
+	
 format:
 	clang-format -i -style=file *.[ch]
-

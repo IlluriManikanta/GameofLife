@@ -8,7 +8,7 @@ typedef struct Word {
     uint32_t len;
 } Word;
 
-typedef Word * WordTable;
+typedef Word *WordTable;
 
 Word *word_create(uint8_t *syms, uint32_t len);
 
